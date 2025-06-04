@@ -2,7 +2,6 @@
 
 A CLI tool that helps developers write **standardized, expressive commit messages** following the [Conventional Commits](https://www.conventionalcommits.org/) specification.
 
-[![Publish to npm](https://github.com/Phantasm0009/commit-buddy/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Phantasm0009/commit-buddy/actions/workflows/npm-publish.yml)
 [![Test and Build](https://github.com/Phantasm0009/commit-buddy/actions/workflows/test.yml/badge.svg)](https://github.com/Phantasm0009/commit-buddy/actions/workflows/test.yml)
 [![npm version](https://img.shields.io/npm/v/@phantasm0009/commit-buddy.svg)](https://www.npmjs.com/package/@phantasm0009/commit-buddy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
