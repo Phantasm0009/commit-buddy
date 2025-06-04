@@ -1,0 +1,29 @@
+# Source files
+src/
+tsconfig.json
+jest.config.js
+.eslintrc.js
+.prettierrc
+
+# Tests
+**/__tests__/
+*.test.*
+
+# Dev files
+.vscode/
+.idea/
+.github/
+.editorconfig
+.gitignore
+.travis.yml
+CI_CD.md
+
+# Logs and temp
+*.log
+coverage/
+.nyc_output/
+tmp/
+
+# Project specific
+CONTRIBUTING.md
+EXAMPLES.md

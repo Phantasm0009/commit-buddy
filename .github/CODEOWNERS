@@ -1,0 +1,15 @@
+# These owners will be the default owners for everything in the repo
+* @Phantasm0009
+
+# Package-related files
+package.json @Phantasm0009
+package-lock.json @Phantasm0009
+
+# Source code
+/src/ @Phantasm0009
+
+# GitHub Actions workflows
+/.github/workflows/ @Phantasm0009
+
+# Documentation
+*.md @Phantasm0009

@@ -1,0 +1,102 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (semver without v prefix, e.g., 1.0.0)'
+        required: true
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Git Identity
+        run: |
+          git config --global user.name ''github-actions[bot]''
+          git config --global user.email ''github-actions[bot]@users.noreply.github.com''
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: "https://registry.npmjs.org/"
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test
+      
+      - name: Build package
+        run: npm run build
+      
+      - name: Update version
+        if: ${{ github.event.inputs.version != '''' }}
+        run: npm version ${{ github.event.inputs.version }} --git-tag-version false
+      
+      - name: Update changelog
+        run: |
+          NEW_VERSION=$(node -p "require(''./package.json'').version")
+          DATE=$(date +%Y-%m-%d)
+          
+          # Create new version section with header
+          VERSION_HEADER="## [$NEW_VERSION] - $DATE"
+          
+          # Get commits since last tag
+          LATEST_TAG=$(git describe --tags --abbrev=0 || echo "")
+          
+          if [ -z "$LATEST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s" --reverse)
+          else
+            COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"- %s" --reverse)
+          fi
+          
+          # Insert new version section at line 8 (after Unreleased section)
+          sed -i "8i\\
+          $VERSION_HEADER\\
+          \\
+          ### Added\\
+          \\
+          ### Changed\\
+          \\
+          ### Fixed\\
+          " CHANGELOG.md
+          
+          # Create git tag
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+      
+      - name: Commit changes
+        run: |
+          NEW_VERSION=$(node -p "require(''./package.json'').version")
+          git add package.json CHANGELOG.md
+          git commit -m "chore(release): prepare for version $NEW_VERSION"
+          git push origin HEAD:${GITHUB_REF#refs/heads/}
+          git push origin "v$NEW_VERSION"
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          name: Release v${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
